@@ -1,0 +1,53 @@
+<div class="sidebar-container">
+  <!-- Logo / Branding -->
+  <div class="sidebar-brand">
+    <div class="brand-icon">
+      <mat-icon>account_balance_wallet</mat-icon>
+    </div>
+    <div class="brand-text">
+      <h2>FinanceApp</h2>
+      <span>{{ i18n.t('app.subtitle') }}</span>
+    </div>
+  </div>
+
+  <!-- Perfil do usuário -->
+  <div class="user-profile" *ngIf="user">
+    <div class="user-avatar">
+      <img *ngIf="user.avatar" [src]="user.avatar" [alt]="user.name">
+      <span *ngIf="!user.avatar" class="avatar-initials">{{ getUserInitials() }}</span>
+    </div>
+    <div class="user-info">
+      <span class="user-name">{{ user.name }}</span>
+      <span class="user-email">{{ user.email }}</span>
+    </div>
+  </div>
+
+  <!-- Navegação -->
+  <nav class="sidebar-nav">
+    <mat-nav-list>
+      <a
+        *ngFor="let item of navItems"
+        mat-list-item
+        [class.active]="isActive(item.route)"
+        (click)="navigate(item.route)"
+        class="nav-item"
+        [attr.aria-current]="isActive(item.route) ? 'page' : null"
+      >
+        <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+        <span matListItemTitle>{{ i18n.t(item.labelKey) }}</span>
+        <mat-badge
+          *ngIf="item.badge"
+          [matBadge]="item.badge"
+          matBadgeColor="warn"
+          matBadgeSize="small"
+          class="nav-badge"
+        ></mat-badge>
+      </a>
+    </mat-nav-list>
+  </nav>
+
+  <!-- Rodapé da sidebar -->
+  <div class="sidebar-footer">
+    <div class="app-version">v1.0.0</div>
+  </div>
+</div>

@@ -1,0 +1,73 @@
+<mat-card class="goals-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>flag</mat-icon>
+      Metas Financeiras
+    </mat-card-title>
+    <button mat-button color="primary" (click)="navigateToGoals()">
+      Ver todas
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div *ngIf="goals.length > 0" class="goals-list">
+      <div
+        *ngFor="let goal of goals"
+        class="goal-item"
+        (click)="navigateToGoal(goal.id)"
+        role="button"
+        tabindex="0"
+        (keyup.enter)="navigateToGoal(goal.id)"
+      >
+        <!-- Ícone da categoria -->
+        <div class="goal-icon">
+          <mat-icon>{{ getCategoryIcon(goal.category) }}</mat-icon>
+        </div>
+
+        <!-- Informações da meta -->
+        <div class="goal-info">
+          <div class="goal-header">
+            <span class="goal-name">{{ goal.name }}</span>
+            <span
+              class="priority-badge"
+              [style.background-color]="getPriorityColor(goal.priority) + '20'"
+              [style.color]="getPriorityColor(goal.priority)"
+            >
+              {{ goal.priority === 'high' ? 'Alta' : goal.priority === 'medium' ? 'Média' : 'Baixa' }}
+            </span>
+          </div>
+
+          <!-- Barra de progresso -->
+          <mat-progress-bar
+            mode="determinate"
+            [value]="goal.percentage"
+            [color]="goal.percentage >= 100 ? 'accent' : 'primary'"
+            class="goal-progress-bar"
+          ></mat-progress-bar>
+
+          <div class="goal-details">
+            <span class="goal-amounts">
+              {{ formatCurrency(goal.current_amount) }} / {{ formatCurrency(goal.target_amount) }}
+            </span>
+            <span class="goal-percentage">{{ goal.percentage.toFixed(0) }}%</span>
+          </div>
+
+          <span *ngIf="goal.target_date" class="goal-deadline">
+            <mat-icon>schedule</mat-icon>
+            {{ getDaysRemaining(goal.target_date) }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estado vazio -->
+    <div *ngIf="goals.length === 0" class="empty-state">
+      <mat-icon>flag</mat-icon>
+      <p>Nenhuma meta definida</p>
+      <button mat-stroked-button color="primary" (click)="navigateToGoals()">
+        Criar Meta
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card>

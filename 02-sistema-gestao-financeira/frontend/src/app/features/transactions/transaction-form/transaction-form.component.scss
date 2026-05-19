@@ -1,0 +1,94 @@
+.form-container {
+  padding: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) { padding: 1rem; }
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+
+  h1 { margin: 0; font-size: 1.5rem; font-weight: 600; }
+  .subtitle { margin: 0.25rem 0 0; color: var(--text-secondary); font-size: 0.875rem; }
+}
+
+.transaction-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-section {
+  border-radius: 12px;
+
+  mat-card-header { margin-bottom: 0.5rem; }
+  mat-card-title { font-size: 1rem; font-weight: 600; }
+}
+
+// Type selector
+.type-selector {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    mat-icon { font-size: 1.25rem; width: 1.25rem; height: 1.25rem; }
+
+    &.selected {
+      color: white;
+      border-color: transparent;
+    }
+
+    &.type-btn-income.selected { background: linear-gradient(135deg, #56ab2f, #a8e063); }
+    &.type-btn-expense.selected { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    &.type-btn-transfer.selected { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+  }
+}
+
+// Fields grid
+.fields-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+
+  .span-2 { grid-column: span 2; @media (max-width: 600px) { grid-column: span 1; } }
+
+  mat-form-field { width: 100%; }
+}
+
+.recurring-fields {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+// Actions
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 0.5rem 0 1rem;
+
+  button {
+    min-width: 140px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+}

@@ -1,0 +1,200 @@
+<div class="dashboard-container">
+  <!-- Header do Dashboard -->
+  <div class="dashboard-header">
+    <div class="greeting-section">
+      <h1 class="greeting">{{ getGreeting() }}</h1>
+      <p class="subtitle">Aqui está um resumo das suas finanças</p>
+    </div>
+    
+    <div class="header-actions">
+      <mat-form-field appearance="outline" class="period-selector">
+        <mat-label>Período</mat-label>
+        <mat-select [(value)]="selectedPeriod" (selectionChange)="onPeriodChange($event.value)">
+          <mat-option *ngFor="let option of periodOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+      <button mat-icon-button (click)="refreshData()" matTooltip="Atualizar dados">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Carregando dados...</p>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!isLoading && dashboardData" class="dashboard-content">
+    
+    <!-- Cards de Resumo Financeiro -->
+    <div class="summary-cards">
+      <!-- Saldo Total -->
+      <mat-card class="summary-card balance-card">
+        <mat-card-content>
+          <div class="card-header">
+            <div class="card-icon balance-icon">
+              <mat-icon>account_balance_wallet</mat-icon>
+            </div>
+            <div class="card-info">
+              <h3>Saldo Total</h3>
+              <p class="card-value">{{ formatCurrency(financialSummary.totalBalance) }}</p>
+            </div>
+          </div>
+          <div class="card-change" [ngClass]="getBalanceChangeColor()">
+            <mat-icon>{{ getBalanceChangeIcon() }}</mat-icon>
+            <span>{{ formatCurrency(financialSummary.balanceChange) }} ({{ formatPercentage(financialSummary.balanceChangePercentage) }})</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Receitas -->
+      <mat-card class="summary-card income-card">
+        <mat-card-content>
+          <div class="card-header">
+            <div class="card-icon income-icon">
+              <mat-icon>trending_up</mat-icon>
+            </div>
+            <div class="card-info">
+              <h3>Receitas</h3>
+              <p class="card-value">{{ formatCurrency(financialSummary.monthlyIncome) }}</p>
+            </div>
+          </div>
+          <div class="card-subtitle">
+            <span>{{ selectedPeriod === 'month' ? 'Este mês' : 'Período selecionado' }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Despesas -->
+      <mat-card class="summary-card expense-card">
+        <mat-card-content>
+          <div class="card-header">
+            <div class="card-icon expense-icon">
+              <mat-icon>trending_down</mat-icon>
+            </div>
+            <div class="card-info">
+              <h3>Despesas</h3>
+              <p class="card-value">{{ formatCurrency(financialSummary.monthlyExpense) }}</p>
+            </div>
+          </div>
+          <div class="card-subtitle">
+            <span>{{ selectedPeriod === 'month' ? 'Este mês' : 'Período selecionado' }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Saldo do Período -->
+      <mat-card class="summary-card balance-period-card">
+        <mat-card-content>
+          <div class="card-header">
+            <div class="card-icon" [ngClass]="financialSummary.monthlyBalance >= 0 ? 'positive-icon' : 'negative-icon'">
+              <mat-icon>{{ financialSummary.monthlyBalance >= 0 ? 'savings' : 'money_off' }}</mat-icon>
+            </div>
+            <div class="card-info">
+              <h3>Saldo do Período</h3>
+              <p class="card-value" [ngClass]="financialSummary.monthlyBalance >= 0 ? 'positive' : 'negative'">
+                {{ formatCurrency(financialSummary.monthlyBalance) }}
+              </p>
+            </div>
+          </div>
+          <div class="card-subtitle">
+            <span>Receitas - Despesas</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Seção Principal -->
+    <div class="main-section">
+      
+      <!-- Coluna Esquerda -->
+      <div class="left-column">
+        
+        <!-- Resumo Financeiro Detalhado -->
+        <app-financial-summary 
+          [data]="dashboardData.summary"
+          [period]="selectedPeriod">
+        </app-financial-summary>
+
+        <!-- Gráfico de Gastos por Categoria -->
+        <app-expense-chart 
+          [data]="dashboardData.expensesByCategory"
+          [period]="selectedPeriod">
+        </app-expense-chart>
+
+      </div>
+
+      <!-- Coluna Direita -->
+      <div class="right-column">
+        
+        <!-- Transações Recentes -->
+        <app-recent-transactions 
+          [transactions]="dashboardData.recentTransactions">
+        </app-recent-transactions>
+
+        <!-- Progresso das Metas -->
+        <app-goals-progress 
+          [goals]="dashboardData.goals">
+        </app-goals-progress>
+
+      </div>
+    </div>
+
+    <!-- Ações Rápidas -->
+    <div class="quick-actions">
+      <h2>Ações Rápidas</h2>
+      <div class="actions-grid">
+        
+        <mat-card class="action-card" (click)="navigateToTransactions()">
+          <mat-card-content>
+            <mat-icon>add_circle</mat-icon>
+            <h3>Nova Transação</h3>
+            <p>Adicionar receita ou despesa</p>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="action-card" (click)="navigateToAccounts()">
+          <mat-card-content>
+            <mat-icon>account_balance</mat-icon>
+            <h3>Gerenciar Contas</h3>
+            <p>Ver e editar suas contas</p>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="action-card" (click)="navigateToGoals()">
+          <mat-card-content>
+            <mat-icon>flag</mat-icon>
+            <h3>Definir Meta</h3>
+            <p>Criar nova meta financeira</p>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="action-card" (click)="navigateToReports()">
+          <mat-card-content>
+            <mat-icon>assessment</mat-icon>
+            <h3>Ver Relatórios</h3>
+            <p>Análises detalhadas</p>
+          </mat-card-content>
+        </mat-card>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Estado Vazio -->
+  <div *ngIf="!isLoading && !dashboardData" class="empty-state">
+    <mat-icon>dashboard</mat-icon>
+    <h2>Bem-vindo ao seu Dashboard!</h2>
+    <p>Comece adicionando suas contas e transações para ver um resumo completo das suas finanças.</p>
+    <button mat-raised-button color="primary" (click)="navigateToAccounts()">
+      Adicionar Primeira Conta
+    </button>
+  </div>
+
+</div>

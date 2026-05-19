@@ -1,0 +1,138 @@
+<div class="login-container">
+  <mat-card class="login-card">
+    <mat-card-header class="login-header">
+      <div class="logo-container">
+        <mat-icon class="logo-icon">account_balance_wallet</mat-icon>
+        <h1>{{ i18n.t('app.title') }}</h1>
+      </div>
+      <p class="subtitle">{{ i18n.t('auth.welcome') }}</p>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <!-- Email -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ i18n.t('auth.email') }}</mat-label>
+          <input
+            matInput
+            type="email"
+            formControlName="email"
+            placeholder="seu@email.com"
+            autocomplete="email"
+          >
+          <mat-icon matSuffix>email</mat-icon>
+          <mat-error *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+            {{ getErrorMessage('email') }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Senha -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ i18n.t('auth.password') }}</mat-label>
+          <input
+            matInput
+            [type]="hidePassword ? 'password' : 'text'"
+            formControlName="password"
+            autocomplete="current-password"
+          >
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hidePassword = !hidePassword"
+          >
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+            {{ getErrorMessage('password') }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Lembrar-me -->
+        <div class="form-options">
+          <mat-slide-toggle formControlName="remember_me" color="primary">
+            {{ i18n.t('auth.rememberMe') }}
+          </mat-slide-toggle>
+          
+          <button
+            type="button"
+            mat-button
+            color="primary"
+            (click)="navigateToForgotPassword()"
+            class="forgot-password-link"
+          >
+            {{ i18n.t('auth.forgotPassword') }}
+          </button>
+        </div>
+
+        <!-- Botão de Login -->
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          class="login-button full-width"
+          [disabled]="loginForm.invalid || (loadingService.isLoading$ | async)"
+        >
+          <mat-spinner *ngIf="loadingService.isLoading$ | async" diameter="20"></mat-spinner>
+          <span *ngIf="!(loadingService.isLoading$ | async)">{{ i18n.t('auth.login') }}</span>
+        </button>
+
+        <!-- Demo -->
+        <button
+          type="button"
+          mat-stroked-button
+          color="accent"
+          (click)="fillDemoCredentials()"
+          class="demo-button full-width"
+        >
+          <mat-icon>play_arrow</mat-icon>
+          Demo
+        </button>
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions class="login-actions">
+      <div class="register-link">
+        <span>{{ i18n.t('auth.noAccount') }}</span>
+        <button
+          mat-button
+          color="primary"
+          (click)="navigateToRegister()"
+        >
+          {{ i18n.t('auth.registerHere') }}
+        </button>
+      </div>
+    </mat-card-actions>
+  </mat-card>
+
+  <!-- Recursos do Sistema -->
+  <div class="features-section">
+    <h3>{{ i18n.t('app.title') }}</h3>
+    <div class="features-grid">
+      <div class="feature-item">
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
+      </div>
+      <div class="feature-item">
+        <mat-icon>account_balance</mat-icon>
+        <span>{{ i18n.t('nav.accounts') }}</span>
+      </div>
+      <div class="feature-item">
+        <mat-icon>category</mat-icon>
+        <span>{{ i18n.t('nav.categories') }}</span>
+      </div>
+      <div class="feature-item">
+        <mat-icon>trending_up</mat-icon>
+        <span>{{ i18n.t('nav.reports') }}</span>
+      </div>
+      <div class="feature-item">
+        <mat-icon>savings</mat-icon>
+        <span>{{ i18n.t('nav.goals') }}</span>
+      </div>
+      <div class="feature-item">
+        <mat-icon>currency_exchange</mat-icon>
+        <span>{{ i18n.t('exchange.title') }}</span>
+      </div>
+    </div>
+  </div>
+</div>

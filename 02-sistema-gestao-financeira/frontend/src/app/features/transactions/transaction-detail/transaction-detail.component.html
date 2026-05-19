@@ -1,0 +1,80 @@
+<div class="detail-container">
+  <div class="page-header">
+    <button mat-icon-button (click)="back()"><mat-icon>arrow_back</mat-icon></button>
+    <h1>Detalhe da Transação</h1>
+    <div class="header-actions" *ngIf="transaction">
+      <button mat-stroked-button (click)="edit()"><mat-icon>edit</mat-icon> Editar</button>
+      <button mat-stroked-button color="warn" (click)="delete()"><mat-icon>delete</mat-icon> Excluir</button>
+    </div>
+  </div>
+
+  <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
+
+  <div *ngIf="!isLoading && transaction" class="detail-content">
+    <!-- Card principal -->
+    <mat-card class="main-card" [ngClass]="getTypeClass(transaction.type)">
+      <mat-card-content>
+        <div class="amount-section">
+          <span class="type-label">{{ getTypeLabel(transaction.type) }}</span>
+          <span class="amount">{{ formatCurrency(transaction.amount) }}</span>
+          <span class="date">{{ formatDate(transaction.transaction_date) }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Detalhes -->
+    <mat-card class="details-card">
+      <mat-card-content>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <span class="label">Descrição</span>
+            <span class="value">{{ transaction.description }}</span>
+          </div>
+          <div class="detail-item" *ngIf="transaction.category_name">
+            <span class="label">Categoria</span>
+            <span class="value category-value">
+              <span class="dot" [style.background-color]="transaction.category_color"></span>
+              {{ transaction.category_name }}
+            </span>
+          </div>
+          <div class="detail-item" *ngIf="transaction.account_name">
+            <span class="label">Conta</span>
+            <span class="value">{{ transaction.account_name }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Status</span>
+            <span class="value">
+              <span class="status-badge" [ngClass]="'status-' + transaction.status">
+                {{ transaction.status === 'completed' ? 'Concluída' : transaction.status === 'pending' ? 'Pendente' : 'Cancelada' }}
+              </span>
+            </span>
+          </div>
+          <div class="detail-item" *ngIf="transaction.payment_method">
+            <span class="label">Método de pagamento</span>
+            <span class="value">{{ transaction.payment_method }}</span>
+          </div>
+          <div class="detail-item" *ngIf="transaction.reference_number">
+            <span class="label">Referência</span>
+            <span class="value">{{ transaction.reference_number }}</span>
+          </div>
+          <div class="detail-item" *ngIf="transaction.location">
+            <span class="label">Local</span>
+            <span class="value">{{ transaction.location }}</span>
+          </div>
+          <div class="detail-item span-2" *ngIf="transaction.notes">
+            <span class="label">Notas</span>
+            <span class="value">{{ transaction.notes }}</span>
+          </div>
+          <div class="detail-item" *ngIf="transaction.is_recurring">
+            <span class="label">Recorrência</span>
+            <span class="value">{{ transaction.recurring_frequency }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Criada em</span>
+            <span class="value">{{ transaction.created_at | relativeDate }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,43 @@
+<div class="page-container animate-fade-in">
+  <div class="page-header">
+    <h1>{{ i18n.t('goals.title') }}</h1>
+    <button mat-raised-button color="primary" (click)="onNew()">
+      <mat-icon>add</mat-icon> {{ i18n.t('goals.new') }}
+    </button>
+  </div>
+  <div class="loading-container" *ngIf="isLoading"><mat-spinner diameter="40"></mat-spinner></div>
+  <div class="empty-state" *ngIf="!isLoading && goals.length === 0">
+    <mat-icon>flag</mat-icon>
+    <p>{{ i18n.t('goals.noGoals') }}</p>
+    <button mat-stroked-button color="primary" (click)="onNew()">{{ i18n.t('goals.new') }}</button>
+  </div>
+  <div class="goals-grid" *ngIf="!isLoading && goals.length > 0">
+    <mat-card *ngFor="let goal of goals" class="goal-card hoverable-card">
+      <mat-card-header>
+        <mat-card-title>{{ goal.name }}</mat-card-title>
+        <mat-card-subtitle>
+          <mat-chip [style.background-color]="getPriorityColor(goal.priority)" class="priority-chip">
+            {{ i18n.t('goals.' + goal.priority) }}
+          </mat-chip>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="goal-amounts">
+          <span class="current">{{ goal.current_amount | currency:'BRL' }}</span>
+          <span class="separator">/</span>
+          <span class="target">{{ goal.target_amount | currency:'BRL' }}</span>
+        </div>
+        <mat-progress-bar mode="determinate" [value]="goal.percentage" color="primary"></mat-progress-bar>
+        <div class="goal-meta">
+          <span>{{ goal.percentage }}%</span>
+          <span *ngIf="goal.target_date">{{ goal.target_date | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <p class="goal-description" *ngIf="goal.description">{{ goal.description }}</p>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-icon-button (click)="onEdit(goal.id)"><mat-icon>edit</mat-icon></button>
+        <button mat-icon-button color="warn" (click)="onDelete(goal.id)"><mat-icon>delete</mat-icon></button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

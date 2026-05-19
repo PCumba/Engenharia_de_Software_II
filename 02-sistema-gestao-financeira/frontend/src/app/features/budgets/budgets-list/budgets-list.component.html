@@ -1,0 +1,52 @@
+<div class="page-container animate-fade-in">
+  <div class="page-header">
+    <h1>{{ i18n.t('budgets.title') }}</h1>
+    <button mat-raised-button color="primary" (click)="onNew()">
+      <mat-icon>add</mat-icon> {{ i18n.t('budgets.new') }}
+    </button>
+  </div>
+
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div class="empty-state" *ngIf="!isLoading && budgets.length === 0">
+    <mat-icon>account_balance_wallet</mat-icon>
+    <p>{{ i18n.t('budgets.noBudgets') }}</p>
+    <button mat-stroked-button color="primary" (click)="onNew()">{{ i18n.t('budgets.new') }}</button>
+  </div>
+
+  <div class="budgets-grid" *ngIf="!isLoading && budgets.length > 0">
+    <mat-card *ngFor="let budget of budgets" class="budget-card hoverable-card">
+      <mat-card-header>
+        <mat-card-title>{{ budget.name }}</mat-card-title>
+        <mat-card-subtitle>{{ budget.category_name || i18n.t('common.all') }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="budget-progress">
+          <div class="budget-amounts">
+            <span>{{ budget.spent | currency:'BRL' }} / {{ budget.amount | currency:'BRL' }}</span>
+            <mat-chip [style.background-color]="getStatusColor(budget.status)" class="status-chip">
+              {{ i18n.t('budgets.status.' + budget.status) }}
+            </mat-chip>
+          </div>
+          <mat-progress-bar [mode]="'determinate'" [value]="budget.percentage"
+                            [color]="budget.status === 'exceeded' ? 'warn' : (budget.status === 'warning' ? 'accent' : 'primary')">
+          </mat-progress-bar>
+          <div class="budget-meta">
+            <span>{{ budget.percentage }}%</span>
+            <span>{{ i18n.t('budgets.remaining') }}: {{ budget.remaining | currency:'BRL' }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-icon-button (click)="onEdit(budget.id)" [matTooltip]="i18n.t('common.edit')">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="onDelete(budget.id)" [matTooltip]="i18n.t('common.delete')">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

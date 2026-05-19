@@ -1,0 +1,89 @@
+<div class="auth-container">
+  <div class="auth-card animate-fade-in">
+    <div class="auth-header">
+      <mat-icon class="auth-logo">account_balance_wallet</mat-icon>
+      <h1>{{ i18n.t('auth.createAccount') }}</h1>
+      <p class="text-muted">{{ i18n.t('auth.registerSubtitle') }}</p>
+    </div>
+
+    <div class="error-message" *ngIf="errorMessage">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ i18n.t('auth.name') }}</mat-label>
+        <input matInput formControlName="name" autocomplete="name">
+        <mat-icon matPrefix>person</mat-icon>
+        <mat-error *ngIf="registerForm.get('name')?.hasError('required')">
+          {{ i18n.t('validation.required') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ i18n.t('auth.email') }}</mat-label>
+        <input matInput formControlName="email" type="email" autocomplete="email">
+        <mat-icon matPrefix>email</mat-icon>
+        <mat-error *ngIf="registerForm.get('email')?.hasError('email')">
+          {{ i18n.t('validation.invalidEmail') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ i18n.t('auth.password') }}</mat-label>
+        <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'" autocomplete="new-password">
+        <mat-icon matPrefix>lock</mat-icon>
+        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="registerForm.get('password')?.hasError('minlength')">
+          {{ i18n.t('validation.minLength', { min: 8 }) }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ i18n.t('auth.confirmPassword') }}</mat-label>
+        <input matInput formControlName="password_confirmation" [type]="hideConfirmPassword ? 'password' : 'text'" autocomplete="new-password">
+        <mat-icon matPrefix>lock_outline</mat-icon>
+        <button mat-icon-button matSuffix type="button" (click)="hideConfirmPassword = !hideConfirmPassword">
+          <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="registerForm.hasError('passwordMismatch')">
+          {{ i18n.t('validation.passwordMismatch') }}
+        </mat-error>
+      </mat-form-field>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ i18n.t('auth.currency') }}</mat-label>
+          <mat-select formControlName="currency">
+            <mat-option value="BRL">BRL (R$)</mat-option>
+            <mat-option value="USD">USD ($)</mat-option>
+            <mat-option value="EUR">EUR (€)</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ i18n.t('auth.language') }}</mat-label>
+          <mat-select formControlName="language">
+            <mat-option value="pt-BR">Português</mat-option>
+            <mat-option value="en">English</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <button mat-raised-button color="primary" type="submit" class="full-width submit-btn"
+              [disabled]="registerForm.invalid || isLoading">
+        <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+        <span *ngIf="!isLoading">{{ i18n.t('auth.register') }}</span>
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>{{ i18n.t('auth.alreadyHaveAccount') }}
+        <a routerLink="/auth/login">{{ i18n.t('auth.loginHere') }}</a>
+      </p>
+    </div>
+  </div>
+</div>

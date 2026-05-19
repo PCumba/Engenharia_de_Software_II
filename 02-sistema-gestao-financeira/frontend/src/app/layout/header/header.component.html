@@ -1,0 +1,101 @@
+<mat-toolbar class="app-header" color="primary">
+  <!-- Menu toggle -->
+  <button
+    mat-icon-button
+    (click)="onToggleSidenav()"
+    [attr.aria-label]="i18n.t('nav.dashboard')"
+    class="menu-toggle"
+  >
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <!-- Título da página -->
+  <span class="page-title">{{ getPageTitle() }}</span>
+
+  <span class="spacer"></span>
+
+  <!-- Ações do header -->
+  <div class="header-actions">
+    <!-- Language selector -->
+    <button
+      mat-icon-button
+      [matMenuTriggerFor]="langMenu"
+      [matTooltip]="i18n.t('settings.language')"
+      aria-label="Language"
+    >
+      <mat-icon>language</mat-icon>
+    </button>
+
+    <mat-menu #langMenu="matMenu">
+      <button mat-menu-item *ngFor="let lang of i18n.getAvailableLanguages()"
+              (click)="onLanguageChange(lang.code)"
+              [class.active-lang]="lang.code === i18n.getCurrentLang()">
+        <span>{{ lang.flag }} {{ lang.name }}</span>
+      </button>
+    </mat-menu>
+
+    <!-- Toggle de tema -->
+    <button
+      mat-icon-button
+      (click)="themeService.toggleTheme()"
+      [matTooltip]="(themeService.isDarkMode$ | async) ? i18n.t('settings.lightMode') : i18n.t('settings.darkMode')"
+      aria-label="Toggle theme"
+    >
+      <mat-icon>{{ (themeService.isDarkMode$ | async) ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    </button>
+
+    <!-- Alertas -->
+    <button
+      mat-icon-button
+      (click)="navigateToAlerts()"
+      [matTooltip]="'Alertas'"
+      aria-label="Alerts"
+    >
+      <mat-icon
+        [matBadge]="unreadAlerts > 0 ? unreadAlerts : null"
+        matBadgeColor="warn"
+        matBadgeSize="small"
+      >notifications</mat-icon>
+    </button>
+
+    <!-- Menu do usuário -->
+    <button
+      mat-icon-button
+      [matMenuTriggerFor]="userMenu"
+      aria-label="User menu"
+      class="user-menu-btn"
+    >
+      <div class="user-avatar-small">
+        <img *ngIf="user?.avatar" [src]="user!.avatar" [alt]="user!.name">
+        <span *ngIf="!user?.avatar">{{ getUserInitials() }}</span>
+      </div>
+    </button>
+
+    <mat-menu #userMenu="matMenu" xPosition="before">
+      <!-- Info do usuário -->
+      <div class="user-menu-header" mat-menu-item disabled>
+        <strong>{{ user?.name }}</strong>
+        <small>{{ user?.email }}</small>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <button mat-menu-item (click)="navigateToProfile()">
+        <mat-icon>person</mat-icon>
+        <span>{{ i18n.t('settings.profile') }}</span>
+      </button>
+
+      <button mat-menu-item (click)="navigateToSettings()">
+        <mat-icon>settings</mat-icon>
+        <span>{{ i18n.t('nav.settings') }}</span>
+      </button>
+
+      <mat-divider></mat-divider>
+
+      <button mat-menu-item (click)="onLogout()" class="logout-item">
+        <mat-icon>logout</mat-icon>
+        <span>{{ i18n.t('auth.logout') }}</span>
+      </button>
+    </mat-menu>
+  </div>
+</mat-toolbar>

@@ -1,0 +1,26 @@
+<div class="app-container" [class.dark-theme]="themeService.isDarkMode$ | async">
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Carregando...</p>
+  </div>
+
+  <!-- Aplicação Principal -->
+  <div *ngIf="!isLoading" class="main-content">
+    <!-- Layout para usuários autenticados -->
+    <app-layout *ngIf="isAuthenticated">
+      <router-outlet></router-outlet>
+    </app-layout>
+
+    <!-- Layout para páginas públicas -->
+    <div *ngIf="!isAuthenticated" class="public-layout">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+
+  <!-- Notificações Toast -->
+  <app-toast-container></app-toast-container>
+
+  <!-- Confirmação de Ações -->
+  <app-confirmation-dialog></app-confirmation-dialog>
+</div>

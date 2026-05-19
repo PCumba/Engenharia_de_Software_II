@@ -1,0 +1,172 @@
+<div class="form-container">
+  <div class="page-header">
+    <button mat-icon-button (click)="cancel()" aria-label="Voltar">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div>
+      <h1>{{ isEditMode ? 'Editar Transação' : 'Nova Transação' }}</h1>
+      <p class="subtitle">{{ isEditMode ? 'Atualize os dados da transação' : 'Registre uma nova movimentação financeira' }}</p>
+    </div>
+  </div>
+
+  <app-loading-spinner *ngIf="isLoading" message="Carregando..."></app-loading-spinner>
+
+  <form *ngIf="!isLoading" [formGroup]="form" (ngSubmit)="onSubmit()" class="transaction-form">
+
+    <!-- Tipo de transação -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>Tipo de Transação</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="type-selector">
+          <button
+            *ngFor="let opt of typeOptions"
+            type="button"
+            mat-stroked-button
+            [class.selected]="selectedType === opt.value"
+            [class]="'type-btn-' + opt.value"
+            (click)="form.get('type')?.setValue(opt.value)"
+          >
+            <mat-icon>{{ opt.icon }}</mat-icon>
+            {{ opt.label }}
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Dados principais -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>Dados Principais</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="fields-grid">
+
+        <mat-form-field appearance="outline" class="span-2">
+          <mat-label>Descrição *</mat-label>
+          <input matInput formControlName="description" placeholder="Ex: Supermercado, Salário...">
+          <mat-error>{{ getError('description') }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Valor *</mat-label>
+          <input matInput type="number" formControlName="amount" min="0.01" step="0.01" placeholder="0,00">
+          <span matPrefix>R$&nbsp;</span>
+          <mat-error>{{ getError('amount') }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Data *</mat-label>
+          <input matInput type="date" formControlName="transaction_date">
+          <mat-icon matSuffix>calendar_today</mat-icon>
+          <mat-error>{{ getError('transaction_date') }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Conta *</mat-label>
+          <mat-select formControlName="account_id">
+            <mat-option *ngFor="let acc of accounts" [value]="acc.id">{{ acc.name }}</mat-option>
+            <mat-option value="" disabled *ngIf="accounts.length === 0">Nenhuma conta cadastrada</mat-option>
+          </mat-select>
+          <mat-error>{{ getError('account_id') }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" *ngIf="selectedType !== 'transfer'">
+          <mat-label>Categoria</mat-label>
+          <mat-select formControlName="category_id">
+            <mat-option value="">Sem categoria</mat-option>
+            <mat-option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            <mat-option value="completed">Concluída</mat-option>
+            <mat-option value="pending">Pendente</mat-option>
+            <mat-option value="cancelled">Cancelada</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Detalhes adicionais -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>Detalhes Adicionais</mat-card-title>
+        <mat-card-subtitle>Informações opcionais</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content class="fields-grid">
+
+        <mat-form-field appearance="outline">
+          <mat-label>Método de pagamento</mat-label>
+          <mat-select formControlName="payment_method">
+            <mat-option *ngFor="let m of paymentMethods" [value]="m.value">{{ m.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Número de referência</mat-label>
+          <input matInput formControlName="reference_number" placeholder="Ex: NF-001, Boleto...">
+          <mat-icon matSuffix>tag</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Local</mat-label>
+          <input matInput formControlName="location" placeholder="Ex: Supermercado Extra">
+          <mat-icon matSuffix>place</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="span-2">
+          <mat-label>Notas</mat-label>
+          <textarea matInput formControlName="notes" rows="3" placeholder="Observações adicionais..."></textarea>
+        </mat-form-field>
+
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Recorrência -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>Recorrência</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-slide-toggle formControlName="is_recurring" color="primary">
+          Transação recorrente
+        </mat-slide-toggle>
+
+        <div *ngIf="isRecurring" class="fields-grid recurring-fields">
+          <mat-form-field appearance="outline">
+            <mat-label>Frequência *</mat-label>
+            <mat-select formControlName="recurring_frequency">
+              <mat-option *ngFor="let f of recurringFrequencies" [value]="f.value">{{ f.label }}</mat-option>
+            </mat-select>
+            <mat-error>{{ getError('recurring_frequency') }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Data de término</mat-label>
+            <input matInput type="date" formControlName="recurring_end_date">
+            <mat-icon matSuffix>event</mat-icon>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Ações -->
+    <div class="form-actions">
+      <button mat-stroked-button type="button" (click)="cancel()">Cancelar</button>
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="isSaving"
+      >
+        <mat-spinner *ngIf="isSaving" diameter="18"></mat-spinner>
+        <span *ngIf="!isSaving">{{ isEditMode ? 'Salvar alterações' : 'Criar transação' }}</span>
+      </button>
+    </div>
+
+  </form>
+</div>

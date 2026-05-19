@@ -1,0 +1,73 @@
+<mat-card class="transactions-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>receipt_long</mat-icon>
+      Transações Recentes
+    </mat-card-title>
+    <button mat-button color="primary" (click)="navigateToTransactions()">
+      Ver todas
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </mat-card-header>
+
+  <mat-card-content>
+    <!-- Lista de transações -->
+    <div *ngIf="transactions.length > 0" class="transactions-list">
+      <div
+        *ngFor="let transaction of transactions"
+        class="transaction-item"
+        (click)="navigateToTransaction(transaction.id)"
+        role="button"
+        tabindex="0"
+        (keyup.enter)="navigateToTransaction(transaction.id)"
+      >
+        <!-- Ícone do tipo -->
+        <div class="transaction-icon" [ngClass]="getTypeColor(transaction.type)">
+          <mat-icon>{{ getTypeIcon(transaction.type) }}</mat-icon>
+        </div>
+
+        <!-- Informações -->
+        <div class="transaction-info">
+          <span class="transaction-description">{{ transaction.description }}</span>
+          <div class="transaction-meta">
+            <span *ngIf="transaction.category_name" class="transaction-category">
+              <span
+                class="category-dot"
+                [style.background-color]="transaction.category_color"
+              ></span>
+              {{ transaction.category_name }}
+            </span>
+            <span class="transaction-account">{{ transaction.account_name }}</span>
+          </div>
+        </div>
+
+        <!-- Valor e data -->
+        <div class="transaction-values">
+          <span
+            class="transaction-amount"
+            [ngClass]="getTypeColor(transaction.type)"
+          >
+            {{ transaction.type === 'income' ? '+' : '-' }}{{ formatCurrency(transaction.amount) }}
+          </span>
+          <span class="transaction-date">{{ formatDate(transaction.transaction_date) }}</span>
+          <mat-chip
+            *ngIf="transaction.status !== 'completed'"
+            [ngClass]="'status-' + transaction.status"
+            class="status-chip"
+          >
+            {{ getStatusLabel(transaction.status) }}
+          </mat-chip>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estado vazio -->
+    <div *ngIf="transactions.length === 0" class="empty-state">
+      <mat-icon>receipt_long</mat-icon>
+      <p>Nenhuma transação recente</p>
+      <button mat-stroked-button color="primary" (click)="navigateToTransactions()">
+        Adicionar Transação
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card>

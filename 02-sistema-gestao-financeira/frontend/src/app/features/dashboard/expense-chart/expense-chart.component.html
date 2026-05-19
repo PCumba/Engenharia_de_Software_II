@@ -1,0 +1,49 @@
+<mat-card class="chart-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>pie_chart</mat-icon>
+      Gastos por Categoria
+    </mat-card-title>
+    <mat-card-subtitle>{{ getPeriodLabel() }}</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <!-- Gráfico -->
+    <div *ngIf="hasData" class="chart-wrapper">
+      <div class="chart-container">
+        <canvas baseChart
+          [data]="chartData"
+          [type]="chartType"
+          [options]="chartOptions">
+        </canvas>
+        <div class="chart-center">
+          <span class="total-label">Total</span>
+          <span class="total-value">{{ formatCurrency(totalExpense) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lista de categorias -->
+    <div *ngIf="hasData" class="category-list">
+      <div *ngFor="let item of data" class="category-item">
+        <div class="category-color" [style.background-color]="item.color"></div>
+        <div class="category-info">
+          <span class="category-name">{{ item.category }}</span>
+          <span class="category-count">{{ item.count }} transações</span>
+        </div>
+        <div class="category-values">
+          <span class="category-amount">{{ formatCurrency(item.total) }}</span>
+          <span class="category-percentage">
+            {{ formatPercentage(totalExpense > 0 ? (item.total / totalExpense) * 100 : 0) }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estado vazio -->
+    <div *ngIf="!hasData" class="empty-state">
+      <mat-icon>pie_chart_outline</mat-icon>
+      <p>Nenhuma despesa registrada no período</p>
+    </div>
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,252 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+  
+  @media (max-width: 480px) {
+    max-width: 100%;
+    margin-bottom: 1rem;
+  }
+}
+
+.login-header {
+  text-align: center;
+  padding: 2rem 1rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  
+  .logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    
+    .logo-icon {
+      font-size: 3rem;
+      width: 3rem;
+      height: 3rem;
+    }
+    
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 500;
+    }
+  }
+  
+  .subtitle {
+    margin: 0.5rem 0 0;
+    opacity: 0.9;
+    font-size: 0.875rem;
+  }
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem 0;
+  
+  .full-width {
+    width: 100%;
+  }
+  
+  .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.5rem 0;
+    
+    @media (max-width: 480px) {
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+    
+    .forgot-password-link {
+      font-size: 0.875rem;
+      padding: 0;
+      min-width: auto;
+    }
+  }
+  
+  .login-button {
+    height: 48px;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-top: 1rem;
+    
+    mat-spinner {
+      margin-right: 0.5rem;
+    }
+  }
+  
+  .demo-button {
+    height: 40px;
+    margin-top: 0.5rem;
+    
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+.login-actions {
+  padding: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  
+  .register-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    
+    span {
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+}
+
+.features-section {
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+  color: white;
+  
+  h3 {
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+  
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+    
+    .feature-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+      transition: transform 0.2s ease, background-color 0.2s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.15);
+      }
+      
+      mat-icon {
+        font-size: 2rem;
+        width: 2rem;
+        height: 2rem;
+        opacity: 0.9;
+      }
+      
+      span {
+        font-size: 0.875rem;
+        font-weight: 500;
+        opacity: 0.9;
+      }
+    }
+  }
+}
+
+// Animações
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-card {
+  animation: slideInUp 0.6s ease-out;
+}
+
+.features-section {
+  animation: slideInUp 0.6s ease-out 0.2s both;
+}
+
+// Estados de erro
+.mat-form-field.mat-form-field-invalid {
+  .mat-form-field-outline-thick {
+    color: #f44336;
+  }
+}
+
+// Customização do Material
+.mat-raised-button.mat-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  
+  &:hover:not([disabled]) {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  }
+}
+
+.mat-slide-toggle.mat-checked .mat-slide-toggle-thumb {
+  background-color: #667eea;
+}
+
+.mat-slide-toggle.mat-checked .mat-slide-toggle-bar {
+  background-color: rgba(102, 126, 234, 0.5);
+}
+
+// Responsividade adicional
+@media (max-width: 360px) {
+  .login-container {
+    padding: 0.5rem;
+  }
+  
+  .login-card {
+    border-radius: 8px;
+  }
+  
+  .login-header {
+    padding: 1.5rem 1rem 0.5rem;
+    
+    .logo-icon {
+      font-size: 2.5rem;
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+    
+    h1 {
+      font-size: 1.25rem;
+    }
+  }
+}

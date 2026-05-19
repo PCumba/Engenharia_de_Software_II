@@ -1,0 +1,34 @@
+<mat-sidenav-container class="sidenav-container">
+  <!-- Sidebar -->
+  <mat-sidenav
+    #sidenav
+    [mode]="(isHandset$ | async) ? 'over' : 'side'"
+    [opened]="!(isHandset$ | async)"
+    class="sidenav"
+    fixedInViewport
+  >
+    <app-sidebar
+      [user]="user"
+      (closeSidenav)="closeSidenavOnMobile()"
+    ></app-sidebar>
+  </mat-sidenav>
+
+  <!-- Conteúdo principal -->
+  <mat-sidenav-content class="main-content">
+    <!-- Header -->
+    <app-header
+      [user]="user"
+      [unreadAlerts]="unreadAlerts"
+      (toggleSidenav)="toggleSidenav()"
+      (logout)="logout()"
+    ></app-header>
+
+    <!-- Área de conteúdo -->
+    <main class="content-area">
+      <ng-content></ng-content>
+    </main>
+
+    <!-- Footer -->
+    <app-footer></app-footer>
+  </mat-sidenav-content>
+</mat-sidenav-container>

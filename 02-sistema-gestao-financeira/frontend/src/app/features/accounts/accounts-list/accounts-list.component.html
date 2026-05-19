@@ -1,0 +1,99 @@
+<div class="accounts-container">
+  <div class="page-header">
+    <div>
+      <h1>Contas</h1>
+      <p class="subtitle">Gerencie suas contas bancárias e carteiras</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="navigateToNew()">
+      <mat-icon>add</mat-icon> Nova Conta
+    </button>
+  </div>
+
+  <!-- Saldo total -->
+  <mat-card class="total-balance-card">
+    <mat-card-content>
+      <div class="total-balance">
+        <div>
+          <span class="label">Saldo Total Consolidado</span>
+          <span class="value">{{ formatCurrency(totalBalance) }}</span>
+        </div>
+        <mat-icon class="balance-icon">account_balance_wallet</mat-icon>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
+
+  <!-- Grid de contas -->
+  <div *ngIf="!isLoading" class="accounts-grid">
+    <mat-card
+      *ngFor="let account of accounts"
+      class="account-card"
+      (click)="navigateToDetail(account.id)"
+      role="button"
+      tabindex="0"
+      (keyup.enter)="navigateToDetail(account.id)"
+    >
+      <mat-card-content>
+        <div class="account-header">
+          <div class="account-icon" [style.background-color]="account.color">
+            <mat-icon>{{ getTypeIcon(account.type) }}</mat-icon>
+          </div>
+          <div class="account-actions">
+            <button mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()" aria-label="Ações">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="navigateToDetail(account.id)">
+                <mat-icon>visibility</mat-icon> Ver detalhes
+              </button>
+              <button mat-menu-item (click)="navigateToEdit(account.id, $event)">
+                <mat-icon>edit</mat-icon> Editar
+              </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item (click)="deleteAccount(account, $event)" class="delete-action">
+                <mat-icon>delete</mat-icon> Excluir
+              </button>
+            </mat-menu>
+          </div>
+        </div>
+
+        <div class="account-info">
+          <h3 class="account-name">{{ account.name }}</h3>
+          <span class="account-type">{{ getTypeLabel(account.type) }}</span>
+          <span *ngIf="account.bank_name" class="bank-name">{{ account.bank_name }}</span>
+        </div>
+
+        <div class="account-balance">
+          <span class="balance-label">Saldo atual</span>
+          <span class="balance-value" [ngClass]="getBalanceClass(account.current_balance, account.type)">
+            {{ formatCurrency(account.current_balance, account.currency) }}
+          </span>
+        </div>
+
+        <div class="account-footer">
+          <span class="currency-badge">{{ account.currency }}</span>
+          <mat-chip *ngIf="!account.is_active" class="inactive-chip">Inativa</mat-chip>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Card de adicionar -->
+    <mat-card class="add-account-card" (click)="navigateToNew()" role="button" tabindex="0" (keyup.enter)="navigateToNew()">
+      <mat-card-content>
+        <mat-icon>add_circle_outline</mat-icon>
+        <span>Adicionar conta</span>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Estado vazio -->
+  <div *ngIf="!isLoading && accounts.length === 0" class="empty-state">
+    <mat-icon>account_balance</mat-icon>
+    <h2>Nenhuma conta cadastrada</h2>
+    <p>Adicione suas contas bancárias para começar a controlar suas finanças.</p>
+    <button mat-raised-button color="primary" (click)="navigateToNew()">
+      <mat-icon>add</mat-icon> Adicionar primeira conta
+    </button>
+  </div>
+</div>
