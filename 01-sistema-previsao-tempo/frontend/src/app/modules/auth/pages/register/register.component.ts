@@ -1,8 +1,27 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AuthService } from '@core/services/auth.service';
 import { Router } from '@angular/router';
 import { I18nService } from '@core/services/i18n.service';
+
+// Validador personalizado para complexidade da senha
+function passwordComplexityValidator(control: AbstractControl): ValidationErrors | null {
+  const value = control.value;
+  if (!value) return null;
+  
+  const hasUpperCase = /[A-Z]/.test(value);
+  const hasLowerCase = /[a-z]/.test(value);
+  const hasNumeric = /[0-9]/.test(value);
+  const hasSpecialChar = /[^a-zA-Z0-9]/.test(value);
+  
+  const valid = hasUpperCase && hasLowerCase && hasNumeric && hasSpecialChar;
+  
+  if (!valid) {
+    return { passwordComplexity: true };
+  }
+  
+  return null;
+}
 
 @Component({
   selector: 'app-register',
@@ -36,7 +55,11 @@ import { I18nService } from '@core/services/i18n.service';
             <label>{{ i18n.t('auth.password') }}</label>
             <input type="password" formControlName="password" [placeholder]="i18n.t('auth.minChars')" required>
             <p class="field-error" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
-              {{ i18n.t('validation.minLength', {min: 6}) }}
+              <span *ngIf="form.get('password')?.errors?.['required']">{{ i18n.t('validation.required') }}</span>
+              <span *ngIf="form.get('password')?.errors?.['minlength']">{{ i18n.t('validation.minLength', {min: 8}) }}</span>
+              <span *ngIf="form.get('password')?.errors?.['passwordComplexity']">
+                A senha deve conter maiúsculas, minúsculas, números e caracteres especiais
+              </span>
             </p>
           </div>
 
@@ -101,7 +124,7 @@ export class RegisterComponent {
     this.form = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(8), passwordComplexityValidator]]
     });
   }
 

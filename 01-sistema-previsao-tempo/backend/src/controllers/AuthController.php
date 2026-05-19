@@ -32,7 +32,14 @@ class AuthController {
      */
     public function register() {
         try {
-            $input = json_decode(file_get_contents('php://input'), true);
+            $rawInput = file_get_contents('php://input');
+            $input = json_decode($rawInput, true);
+            
+            // Log temporário para debug
+            error_log("=== FRONTEND DEBUG ===");
+            error_log("Raw input: " . $rawInput);
+            error_log("Parsed input: " . json_encode($input));
+            error_log("Content-Type: " . ($_SERVER['CONTENT_TYPE'] ?? 'not set'));
 
             // Validar dados com complexidade de senha
             $rules = [
@@ -42,6 +49,8 @@ class AuthController {
             ];
 
             $errors = Validator::validate($input, $rules);
+            
+            error_log("Validation errors: " . json_encode($errors));
             
             if (!Validator::isValid($errors)) {
                 $this->activityLogModel->logAuthEvent(null, 'register', false, [
@@ -97,7 +106,8 @@ class AuthController {
      */
     public function login() {
         try {
-            $input = json_decode(file_get_contents('php://input'), true);
+            $rawInput = file_get_contents('php://input');
+            $input = json_decode($rawInput, true);
 
             // Validar dados
             $rules = [

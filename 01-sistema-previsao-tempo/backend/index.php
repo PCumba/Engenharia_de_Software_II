@@ -5,9 +5,27 @@
  */
 
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: ' . (getenv('CORS_ORIGIN') ?: 'http://localhost:4200'));
+
+// Configuração CORS mais flexível
+$allowedOrigins = [
+    'http://localhost:4200',
+    'http://localhost:3000',
+    'http://localhost:8080',
+    'http://127.0.0.1:4200',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:8080'
+];
+
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: $origin");
+} else {
+    header('Access-Control-Allow-Origin: *');
+}
+
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+header('Access-Control-Allow-Credentials: true');
 
 // Lidar com requisições OPTIONS (CORS preflight)
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -25,6 +43,15 @@ if (file_exists(__DIR__ . '/src/config/.env')) {
 
 // Incluir dependências
 require_once __DIR__ . '/src/config/database.php';
+require_once __DIR__ . '/src/utils/Response.php';
+require_once __DIR__ . '/src/utils/Validator.php';
+require_once __DIR__ . '/src/middleware/Auth.php';
+require_once __DIR__ . '/src/models/User.php';
+require_once __DIR__ . '/src/models/Weather.php';
+require_once __DIR__ . '/src/models/ActivityLog.php';
+require_once __DIR__ . '/src/models/PasswordResetToken.php';
+require_once __DIR__ . '/src/services/EmailService.php';
+require_once __DIR__ . '/src/services/WeatherService.php';
 require_once __DIR__ . '/src/controllers/AuthController.php';
 require_once __DIR__ . '/src/controllers/WeatherController.php';
 

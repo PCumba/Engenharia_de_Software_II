@@ -14,12 +14,12 @@ class EmailService {
 
     public function __construct() {
         // Configurações SMTP - devem vir do arquivo de configuração
-        $this->smtpHost = $_ENV['SMTP_HOST'] ?? 'localhost';
-        $this->smtpPort = $_ENV['SMTP_PORT'] ?? 587;
-        $this->smtpUsername = $_ENV['SMTP_USERNAME'] ?? '';
-        $this->smtpPassword = $_ENV['SMTP_PASSWORD'] ?? '';
-        $this->fromEmail = $_ENV['FROM_EMAIL'] ?? 'noreply@weatherapp.com';
-        $this->fromName = $_ENV['FROM_NAME'] ?? 'Weather App';
+        $this->smtpHost = getenv('MAIL_HOST') ?: 'localhost';
+        $this->smtpPort = getenv('MAIL_PORT') ?: 587;
+        $this->smtpUsername = getenv('MAIL_USER') ?: '';
+        $this->smtpPassword = getenv('MAIL_PASSWORD') ?: '';
+        $this->fromEmail = getenv('MAIL_USER') ?: 'noreply@weatherapp.com';
+        $this->fromName = getenv('FROM_NAME') ?: 'Weather App';
     }
 
     /**
@@ -150,38 +150,168 @@ class EmailService {
      * @return bool
      */
     private function sendEmailAttempt($to, $subject, $htmlBody, $textBody) {
-        // Headers básicos
-        $headers = [
-            'MIME-Version: 1.0',
-            'Content-Type: multipart/alternative; boundary="boundary-' . uniqid() . '"',
-            'From: ' . $this->fromName . ' <' . $this->fromEmail . '>',
-            'Reply-To: ' . $this->fromEmail,
-            'X-Mailer: PHP/' . phpversion()
-        ];
-
-        $boundary = 'boundary-' . uniqid();
-        
-        // Corpo do email multipart
-        $body = "--$boundary\r\n";
-        $body .= "Content-Type: text/plain; charset=UTF-8\r\n";
-        $body .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
-        $body .= $textBody . "\r\n\r\n";
-        
-        $body .= "--$boundary\r\n";
-        $body .= "Content-Type: text/html; charset=UTF-8\r\n";
-        $body .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
-        $body .= $htmlBody . "\r\n\r\n";
-        
-        $body .= "--$boundary--";
-
         // Para desenvolvimento, simular envio
-        if (($_ENV['APP_ENV'] ?? 'development') === 'development') {
+        if ((getenv('APP_ENV') ?: 'development') === 'development') {
             error_log("EMAIL SIMULADO - Para: $to, Assunto: $subject");
             return true;
         }
 
-        // Envio real do email
-        return mail($to, $subject, $body, implode("\r\n", $headers));
+        // Usar SMTP para envio real
+        return $this->sendViaSMTP($to, $subject, $htmlBody, $textBody);
+    }
+
+    /**
+     * Enviar email via SMTP
+     * @param string $to Email de destino
+     * @param string $subject Assunto
+     * @param string $htmlBody Corpo HTML
+     * @param string $textBody Corpo texto
+     * @return bool
+     */
+    private function sendViaSMTP($to, $subject, $htmlBody, $textBody) {
+        try {
+            // Conectar ao servidor SMTP
+            $socket = fsockopen($this->smtpHost, $this->smtpPort, $errno, $errstr, 30);
+            
+            if (!$socket) {
+                error_log("Erro SMTP: Não foi possível conectar ao servidor");
+                return false;
+            }
+
+            // Ler resposta inicial
+            $response = fgets($socket, 512);
+            if (substr($response, 0, 3) != '220') {
+                error_log("Erro SMTP: Resposta inicial inválida - $response");
+                fclose($socket);
+                return false;
+            }
+
+            // EHLO
+            fputs($socket, "EHLO " . $this->smtpHost . "\r\n");
+            $response = fgets($socket, 512);
+
+            // STARTTLS
+            fputs($socket, "STARTTLS\r\n");
+            $response = fgets($socket, 512);
+            
+            if (substr($response, 0, 3) != '220') {
+                error_log("Erro SMTP: STARTTLS falhou - $response");
+                fclose($socket);
+                return false;
+            }
+
+            // Upgrade para TLS
+            if (!stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+                error_log("Erro SMTP: Falha ao ativar TLS");
+                fclose($socket);
+                return false;
+            }
+
+            // EHLO novamente após TLS
+            fputs($socket, "EHLO " . $this->smtpHost . "\r\n");
+            $response = fgets($socket, 512);
+
+            // AUTH LOGIN
+            fputs($socket, "AUTH LOGIN\r\n");
+            $response = fgets($socket, 512);
+            
+            if (substr($response, 0, 3) != '334') {
+                error_log("Erro SMTP: AUTH LOGIN falhou - $response");
+                fclose($socket);
+                return false;
+            }
+
+            // Username
+            fputs($socket, base64_encode($this->smtpUsername) . "\r\n");
+            $response = fgets($socket, 512);
+            
+            if (substr($response, 0, 3) != '334') {
+                error_log("Erro SMTP: Username rejeitado - $response");
+                fclose($socket);
+                return false;
+            }
+
+            // Password
+            fputs($socket, base64_encode($this->smtpPassword) . "\r\n");
+            $response = fgets($socket, 512);
+            
+            if (substr($response, 0, 3) != '235') {
+                error_log("Erro SMTP: Autenticação falhou - $response");
+                fclose($socket);
+                return false;
+            }
+
+            // MAIL FROM
+            fputs($socket, "MAIL FROM: <" . $this->fromEmail . ">\r\n");
+            $response = fgets($socket, 512);
+            
+            if (substr($response, 0, 3) != '250') {
+                error_log("Erro SMTP: MAIL FROM rejeitado - $response");
+                fclose($socket);
+                return false;
+            }
+
+            // RCPT TO
+            fputs($socket, "RCPT TO: <$to>\r\n");
+            $response = fgets($socket, 512);
+            
+            if (substr($response, 0, 3) != '250') {
+                error_log("Erro SMTP: RCPT TO rejeitado - $response");
+                fclose($socket);
+                return false;
+            }
+
+            // DATA
+            fputs($socket, "DATA\r\n");
+            $response = fgets($socket, 512);
+            
+            if (substr($response, 0, 3) != '354') {
+                error_log("Erro SMTP: DATA rejeitado - $response");
+                fclose($socket);
+                return false;
+            }
+
+            // Headers e corpo do email
+            $boundary = 'boundary-' . uniqid();
+            
+            $headers = "From: " . $this->fromName . " <" . $this->fromEmail . ">\r\n";
+            $headers .= "To: $to\r\n";
+            $headers .= "Subject: $subject\r\n";
+            $headers .= "MIME-Version: 1.0\r\n";
+            $headers .= "Content-Type: multipart/alternative; boundary=\"$boundary\"\r\n";
+            $headers .= "\r\n";
+
+            $body = "--$boundary\r\n";
+            $body .= "Content-Type: text/plain; charset=UTF-8\r\n";
+            $body .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
+            $body .= $textBody . "\r\n\r\n";
+            
+            $body .= "--$boundary\r\n";
+            $body .= "Content-Type: text/html; charset=UTF-8\r\n";
+            $body .= "Content-Transfer-Encoding: 8bit\r\n\r\n";
+            $body .= $htmlBody . "\r\n\r\n";
+            
+            $body .= "--$boundary--\r\n";
+
+            fputs($socket, $headers . $body . "\r\n.\r\n");
+            $response = fgets($socket, 512);
+            
+            if (substr($response, 0, 3) != '250') {
+                error_log("Erro SMTP: Envio rejeitado - $response");
+                fclose($socket);
+                return false;
+            }
+
+            // QUIT
+            fputs($socket, "QUIT\r\n");
+            fclose($socket);
+
+            return true;
+
+        } catch (Exception $e) {
+            error_log("Erro SMTP: " . $e->getMessage());
+            return false;
+        }
     }
 
     /**
