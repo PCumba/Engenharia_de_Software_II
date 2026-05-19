@@ -273,3 +273,159 @@ input:focus, textarea:focus, select:focus {
   h1 { font-size: 1.5rem; }
   h2 { font-size: 1.25rem; }
 }
+
+/* ============================================
+   Dark Theme
+   ============================================ */
+body.dark-theme {
+  --bg-primary: #0F1923;
+  --bg-secondary: #1A2332;
+  --surface: #1E2D3D;
+  --surface-glass: rgba(30, 45, 61, 0.85);
+  --surface-elevated: rgba(30, 45, 61, 0.95);
+
+  --text-primary: #E8EDF2;
+  --text-secondary: #A0B4C8;
+  --text-muted: #6B7F94;
+  --text-inverse: #1A2332;
+
+  --border: rgba(74, 144, 217, 0.15);
+  --border-strong: rgba(74, 144, 217, 0.25);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.3), 0 4px 10px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.4), 0 8px 20px rgba(0, 0, 0, 0.25);
+
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(74, 144, 217, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(103, 184, 222, 0.05) 0%, transparent 50%);
+}
+
+/* Dark theme — Headers */
+body.dark-theme h1,
+body.dark-theme h2,
+body.dark-theme h3,
+body.dark-theme h4 {
+  color: var(--text-primary);
+}
+
+body.dark-theme p {
+  color: var(--text-secondary);
+}
+
+/* Dark theme — Form elements */
+body.dark-theme input,
+body.dark-theme textarea,
+body.dark-theme select {
+  background: var(--surface);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+body.dark-theme input::placeholder,
+body.dark-theme textarea::placeholder {
+  color: var(--text-muted);
+}
+
+body.dark-theme input:focus,
+body.dark-theme textarea:focus,
+body.dark-theme select:focus {
+  background: var(--bg-secondary);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.2), var(--shadow-sm);
+}
+
+/* Dark theme — Cards & surfaces */
+body.dark-theme .login-card,
+body.dark-theme .register-card,
+body.dark-theme .forgot-card {
+  background: var(--surface-glass);
+  border-color: var(--border);
+  box-shadow: var(--shadow-xl);
+}
+
+body.dark-theme .header {
+  background: var(--surface-glass);
+  border-bottom-color: var(--border);
+}
+
+body.dark-theme .footer {
+  background: var(--surface-glass);
+  border-top-color: var(--border);
+}
+
+body.dark-theme .forecast-card {
+  background: var(--surface-glass);
+  border-color: var(--border);
+}
+
+body.dark-theme .forecast-item {
+  background: rgba(74, 144, 217, 0.08);
+}
+
+body.dark-theme .forecast-item:hover {
+  background: rgba(74, 144, 217, 0.14);
+}
+
+body.dark-theme .search-form,
+body.dark-theme .search-input-wrapper input {
+  background: var(--surface-glass);
+  border-color: var(--border);
+}
+
+body.dark-theme .chip {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text-secondary);
+}
+
+body.dark-theme .chip:hover {
+  background: rgba(74, 144, 217, 0.1);
+  color: var(--primary-light);
+  border-color: var(--primary);
+}
+
+body.dark-theme .favorite-card {
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+
+body.dark-theme .favorite-info h3 {
+  color: var(--text-primary);
+}
+
+body.dark-theme .no-favorites {
+  background: var(--surface);
+  color: var(--text-secondary);
+}
+
+body.dark-theme .error-box {
+  background: rgba(229, 62, 62, 0.1);
+  border-color: rgba(229, 62, 62, 0.2);
+}
+
+body.dark-theme .success-box {
+  background: rgba(56, 178, 172, 0.1);
+  border-color: rgba(56, 178, 172, 0.2);
+}
+
+/* Dark theme — Preferences card */
+body.dark-theme .pref-card {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+/* Dark theme — Scrollbar */
+body.dark-theme::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+body.dark-theme::-webkit-scrollbar-thumb {
+  background: var(--primary-dark);
+}
+
+body.dark-theme::selection {
+  background: rgba(74, 144, 217, 0.3);
+}

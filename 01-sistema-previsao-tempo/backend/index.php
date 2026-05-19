@@ -73,6 +73,51 @@ try {
             }
             break;
 
+        case 'api/auth/forgot-password':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $controller = new AuthController();
+                $controller->requestPasswordReset();
+            }
+            break;
+
+        case 'api/auth/validate-token':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $controller = new AuthController();
+                $controller->validateResetToken();
+            }
+            break;
+
+        case 'api/auth/reset-password':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $controller = new AuthController();
+                $controller->resetPassword();
+            }
+            break;
+
+        case 'api/auth/change-password':
+            if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+                $controller = new AuthController();
+                $controller->changePassword();
+            }
+            break;
+
+        case 'api/auth/profile':
+            if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+                $controller = new AuthController();
+                $controller->updateProfile();
+            } elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+                $controller = new AuthController();
+                $controller->deleteAccount();
+            }
+            break;
+
+        case 'api/auth/activity-log':
+            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+                $controller = new AuthController();
+                $controller->getActivityLog();
+            }
+            break;
+
         // Previsão do Tempo
         case 'api/weather/current':
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {

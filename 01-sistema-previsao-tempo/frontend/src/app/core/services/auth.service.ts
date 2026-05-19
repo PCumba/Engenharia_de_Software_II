@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { environment } from '@environments/environment';
 
@@ -32,8 +32,45 @@ export class AuthService {
   }
 
   logout(): void {
+    this.http.post(`${this.apiUrl}/api/auth/logout`, {}).subscribe();
     localStorage.removeItem(this.tokenKey);
     this.currentUserSubject.next(null);
+  }
+
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/api/auth/forgot-password`, { email });
+  }
+
+  validateResetToken(token: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/api/auth/validate-token`, { token });
+  }
+
+  resetPassword(token: string, password: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/api/auth/reset-password`, { token, password });
+  }
+
+  changePassword(currentPassword: string, newPassword: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/api/auth/change-password`, {
+      current_password: currentPassword,
+      new_password: newPassword
+    });
+  }
+
+  updateProfile(data: { name?: string; email?: string }): Observable<any> {
+    return this.http.put(`${this.apiUrl}/api/auth/profile`, data);
+  }
+
+  deleteAccount(password: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/api/auth/profile`, {
+      body: { password }
+    });
+  }
+
+  updatePreferences(language: string, theme: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/api/auth/preferences`, {
+      language,
+      theme
+    });
   }
 
   setToken(token: string): void {
@@ -52,11 +89,8 @@ export class AuthService {
     return this.http.get(`${this.apiUrl}/api/auth/me`);
   }
 
-  updatePreferences(language: string, theme: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/api/auth/preferences`, {
-      language,
-      theme
-    });
+  setCurrentUser(user: any): void {
+    this.currentUserSubject.next(user);
   }
 
   private loadUserFromStorage(): void {

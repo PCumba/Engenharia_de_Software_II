@@ -175,7 +175,7 @@ class EmailService {
         $body .= "--$boundary--";
 
         // Para desenvolvimento, simular envio
-        if ($_ENV['APP_ENV'] === 'development') {
+        if (($_ENV['APP_ENV'] ?? 'development') === 'development') {
             error_log("EMAIL SIMULADO - Para: $to, Assunto: $subject");
             return true;
         }

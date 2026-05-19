@@ -1,4 +1,4 @@
-# Sistema de Gestão Financeira Pessoal
+d# Sistema de Gestão Financeira Pessoal
 
 ## Visão Geral
 Sistema completo para gestão de finanças pessoais com controle de receitas, despesas, categorização, relatórios e metas financeiras.

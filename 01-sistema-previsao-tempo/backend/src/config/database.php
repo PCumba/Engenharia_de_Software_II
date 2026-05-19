@@ -82,12 +82,68 @@ class Database {
                 name TEXT NOT NULL,
                 language TEXT DEFAULT 'pt',
                 theme TEXT DEFAULT 'light',
+                failed_login_attempts INTEGER DEFAULT 0,
+                locked_until TEXT DEFAULT NULL,
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP,
                 updated_at TEXT DEFAULT CURRENT_TIMESTAMP
             )"
         );
 
+        $this->connection->exec(
+            "CREATE TABLE IF NOT EXISTS weather_searches (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                city TEXT NOT NULL,
+                country TEXT,
+                weather_data TEXT,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )"
+        );
+
+        $this->connection->exec(
+            "CREATE TABLE IF NOT EXISTS favorites (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                city TEXT NOT NULL,
+                country TEXT,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                UNIQUE(user_id, city)
+            )"
+        );
+
+        $this->connection->exec(
+            "CREATE TABLE IF NOT EXISTS activity_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                action TEXT NOT NULL,
+                description TEXT,
+                metadata TEXT,
+                ip_address TEXT,
+                user_agent TEXT,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )"
+        );
+
+        $this->connection->exec(
+            "CREATE TABLE IF NOT EXISTS password_reset_tokens (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                token TEXT NOT NULL,
+                expires_at TEXT NOT NULL,
+                used_at TEXT DEFAULT NULL,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )"
+        );
+
         $this->connection->exec('CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)');
+        $this->connection->exec('CREATE INDEX IF NOT EXISTS idx_searches_user ON weather_searches(user_id)');
+        $this->connection->exec('CREATE INDEX IF NOT EXISTS idx_favorites_user ON favorites(user_id)');
+        $this->connection->exec('CREATE INDEX IF NOT EXISTS idx_logs_user ON activity_logs(user_id)');
+        $this->connection->exec('CREATE INDEX IF NOT EXISTS idx_tokens_token ON password_reset_tokens(token)');
     }
 
     public function getConnection() {

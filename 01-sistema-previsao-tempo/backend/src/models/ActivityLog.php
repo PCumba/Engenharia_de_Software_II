@@ -33,7 +33,8 @@ class ActivityLog {
             $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
             $stmt->bindParam(':action', $action, PDO::PARAM_STR);
             $stmt->bindParam(':description', $description, PDO::PARAM_STR);
-            $stmt->bindParam(':metadata', json_encode($metadata), PDO::PARAM_STR);
+            $metadataJson = json_encode($metadata);
+            $stmt->bindParam(':metadata', $metadataJson, PDO::PARAM_STR);
             $stmt->bindParam(':ip_address', $ipAddress, PDO::PARAM_STR);
             $stmt->bindParam(':user_agent', $userAgent, PDO::PARAM_STR);
 
