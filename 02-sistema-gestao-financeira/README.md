@@ -37,7 +37,7 @@ Sistema completo para gestão de finanças pessoais com controle de receitas, de
 - Controle de dívidas
 - Planejamento de aposentadoria
 
-## Tecnologias
+## Tecnologias Usadas
 
 ### Backend
 - **PHP 8.1+** com arquitetura MVC
